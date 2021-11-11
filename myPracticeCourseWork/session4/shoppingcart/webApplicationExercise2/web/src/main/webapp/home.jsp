@@ -27,16 +27,18 @@
     String itemUuid = (String) request.getParameter("itemUUID");
 
     if ("addItemToCart".equals(action)) {
-        message = "adding "+itemName + " to cart";
         ShoppingItem shoppingItem = shoppingService.getNewItemByName(itemName);
-        message = "adding "+itemName + " to cart : "+shoppingItem;
-        shoppingCart.addItemToCart(shoppingItem);
-    }
-    if ("removeItemFromCart".equals(action)) {
-        message = "removing "+itemName + " from cart";
+        if (shoppingItem == null) {
+            message = "cannot add unknown " + itemName + " to cart";
+        } else {
+            message = "adding " + itemName + " to cart price= " + shoppingItem.getPrice();
+            shoppingCart.addItemToCart(shoppingItem);
+        }
+    } else if ("removeItemFromCart".equals(action)) {
+        message = "removed " + itemName + " from cart";
         shoppingCart.removeItemFromCart(itemUuid);
     } else {
-        message = "action="+action;
+        message = "unknown action=" + action;
     }
 
 %>
@@ -95,12 +97,17 @@
                     <!-- post avoids url encoded parameters -->
                     <form action="./home.jsp" method="get">
                         <input type="hidden" name="itemUUID" value="<%=item.getUuid()%>">
+                        <input type="hidden" name="itemName" value="<%=item.getName()%>">
                         <input type="hidden" name="action" value="removeItemFromCart">
                         <button type="submit" >Remove Item</button>
                     </form> 
                 </td>
             </tr>
             <% }%>
+            <tr>
+                <td>TOTAL</td>
+                <td><%=shoppingCart.getTotal()%></td>
+            </tr>
 
         </table>
 
